@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Steam Guides Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1b2838;
+      color: #c7d5e0;
+    }
+
+    header {
+      background-color: #171a21;
+      padding: 1em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      flex: 1 1 100%;
+      text-align: center;
+      color: #66c0f4;
+      margin: 0.5em 0;
+    }
+    
+    .info {
+      display: block;
+      text-align: center;
+      font-size: 0.9em;
+      color: #66c0f4;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-top: 0.5em;
+    }
+
+    form, select {
+      background-color: #2a475e;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5em;
+      margin: 0 1em;
+      color: #c7d5e0;
+    }
+
+    input[type="text"] {
+      padding: 0.4em;
+      border-radius: 3px;
+      border: 1px solid #c7d5e0;
+      background-color: #1b2838;
+      color: #fff;
+    }
+
+    button {
+      padding: 0.4em 1em;
+      border: none;
+      border-radius: 3px;
+      background-color: #66c0f4;
+      color: #1b2838;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #417a9b;
+    }
+
+    main {
+      padding: 2em;
+    }
+
+    canvas {
+      width: 100% !important;
+      max-height: 70vh !important;
+    }
+
+    select {
+      min-width: 250px;
+    }
+
+    p {
+      margin-left: 1em;
+      color: #ff5555;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Steam Guides Tracker</h1>
+    <div class="controls">
+      <select id="guideSelect">
+        <option value="">-- Select a guide --</option>
+        {% for g in guides %}
+        <option value="{{ g.id }}" {% if selected_guide == g.id %}selected{% endif %}>{{ g.name }} ({{ g.id }})</option>
+        {% endfor %}
+      </select>
+      <form action="./add-guide" method="post">
+        <input type="text" name="guide_id" placeholder="Enter Guide ID" pattern="^\d{1,32}$" title="Only numbers, max 32 chars" required>
+        <button type="submit">Add</button>
+      </form>
+    </div>
+  </header>
+
+  {% if error %}
+  <p>{{ error }}</p>
+  {% endif %}
+
+  <main>
+    <canvas id="chart"></canvas>
+  </main>
+
+  <small class="info"> Data refresh every hour, times are in GMT</small>
+
+  <script>
+    const select = document.getElementById("guideSelect");
+    const ctx = document.getElementById("chart").getContext("2d");
+    let chart;
+    select.addEventListener("change", async () => {
+      if (!select.value) return;
+      history.pushState(null, "", `./${select.value}`);
+      const res = await fetch(`./data/${select.value}`);
+      const data = await res.json();
+      const labels = data.map(d => d.timestamp);
+      const likes = data.map(d => d.likes);
+      const visitors = data.map(d => d.visitors);
+      const favorites = data.map(d => d.favorites);
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Ratings / Likes', data: likes, borderColor: 'green', backgroundColor: 'green', fill: false },
+            { label: 'Unique Visitors', data: visitors, borderColor: 'blue', backgroundColor: 'blue', fill: false },
+            { label: 'Current Favorites', data: favorites, borderColor: 'yellow', backgroundColor: 'yellow', fill: false }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#c7d5e0' }, grid: { color: '#2a475e' } },
+            y: { beginAtZero: true, ticks: { color: '#c7d5e0' }, grid: { color: '#2a475e' } }
+          },
+          plugins: {
+            legend: { labels: { color: '#c7d5e0' } }
+          }
+        }
+      });
+    });
+    if (select.value) {
+      const event = new Event("change");
+      select.dispatchEvent(event);
+    }
+  </script>
+
+</body>
+</html>
