@@ -10,13 +10,15 @@ app = Flask(__name__)
 def is_valid_guide_id(guide_id):
     return bool(re.match(r"^\d{1,32}$", guide_id))
 
-def render_index(selected_guide=None):
+def render_index(guide_id=None):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, name FROM guides ORDER BY id DESC")
-    guides = cur.fetchall()
+    cur.execute("""
+        SELECT id, name FROM guides WHERE id = ?
+    """, (guide_id,))
+    row = cur.fetchone()
     conn.close()
-    return render_template("index.html", guides=guides, selected_guide=selected_guide)
+    return render_template("index.html", guide=row)
 
 @app.route("/", methods=["GET"])
 def index():
@@ -24,7 +26,7 @@ def index():
 
 @app.route("/<int:guide_id>")
 def guide_page(guide_id):
-    return render_index(selected_guide=guide_id)
+    return render_index(guide_id=guide_id)
 
 @app.route("/add-guide", methods=["POST"])
 def add_guide():
@@ -52,6 +54,24 @@ def data(guide_id):
     rows = cur.fetchall()
     conn.close()
     return jsonify([dict(r) for r in rows])
+
+@app.route("/search")
+def search():
+    query = request.args.get("q", "").strip()
+    if len(query) < 3:
+        return jsonify([])
+
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT id, name FROM guides 
+        WHERE name LIKE ? 
+        ORDER BY id DESC 
+        LIMIT 100
+    """, (f"%{query}%",))
+    results = [{"id": row["id"], "name": row["name"]} for row in cur.fetchall()]
+    conn.close()
+    return jsonify(results)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
