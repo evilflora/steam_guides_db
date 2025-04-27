@@ -1,0 +1,163 @@
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1b2838;
+      color: #c7d5e0;
+    }
+
+    header {
+      background-color: #171a21;
+      padding: 1em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      flex: 1 1 100%;
+      text-align: center;
+      color: #66c0f4;
+      margin: 0.2em 0;
+    }
+    
+    main h3 {
+      flex: 1 1 100%;
+      text-align: center;
+      margin: 0.5em 0;
+    }
+    
+    .info {
+      display: block;
+      text-align: center;
+      font-size: 0.9em;
+      color: #66c0f4;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    form, select {
+      background-color: #2a475e;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5em;
+      margin: 0 1em;
+      color: #c7d5e0;
+    }
+
+    input[type="text"] {
+      padding: 0.4em;
+      border-radius: 3px;
+      border: 1px solid #c7d5e0;
+      background-color: #1b2838;
+      color: #fff;
+    }
+
+    button {
+      padding: 0.4em 1em;
+      border: none;
+      border-radius: 3px;
+      background-color: #66c0f4;
+      color: #1b2838;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    small {
+      margin: 1em;
+    }
+
+    button:hover {
+      background-color: #417a9b;
+    }
+
+    main {
+      padding: 0 1em 0 1em;
+    }
+
+    canvas {
+      width: 100% !important;
+      max-height: 70vh !important;
+    }
+
+    select {
+      min-width: 250px;
+    }
+
+    p {
+      margin-left: 1em;
+      color: #ff5555;
+    }
+    
+    a, a:visited, a:hover {
+      color:#9eabb5;
+      text-decoration: none;
+    }
+
+    #guideSelect {
+      position: relative;
+      max-width: 400px;
+    }
+    
+    #guideSearch {
+      padding: 0.4em;
+      border-radius: 3px;
+      border: 1px solid #2a475e;
+      background-color: #1b2838;
+      color: #fff;
+      width: 100%;
+      box-sizing: border-box;
+      width: 350px;
+    }
+    
+    #guideSearch::-webkit-search-cancel-button {
+      appearance: none;
+      height: 16px;
+      width: 16px;
+      background: url('data:image/svg+xml;utf8,<svg fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.3 5.71a1 1 0 0 0-1.42 0L12 10.59 7.11 5.7a1 1 0 0 0-1.41 1.41L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.42L12 13.41l4.89 4.9a1 1 0 0 0 1.42-1.42L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4z"/></svg>') no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+    }
+    
+    #suggestions {
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0;
+      right: 0;
+      background-color: #2a475e;
+      border: 1px solid #66c0f4;
+      border-radius: 5px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 10;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    
+    #suggestions li {
+      padding: 0.4em 0.6em;
+      border-bottom: 1px solid #1b2838;
+      cursor: pointer;
+    }
+    
+    #suggestions li:hover {
+      background-color: #417a9b;
+    }
+    #rangeButtons button {
+      margin: 0 5px;
+      background-color: #2a475e;
+      color: #c7d5e0;
+      border: 1px solid #66c0f4;
+      border-radius: 3px;
+      padding: 0.4em 0.6em;
+      cursor: pointer;
+    }
+    #rangeButtons button:hover {
+      background-color: #417a9b;
+    }

@@ -77,7 +77,7 @@ def scrape_all():
                 rating_text = soup.select_one(".numRatings")
                 likes = int(rating_text.text.replace(",", "").replace("ratings", "").strip()) if rating_text else 0
 
-                timestamp = datetime.now().replace(second=0, microsecond=0)
+                timestamp = int(datetime.now().timestamp())
 
                 cur.execute("""
                     INSERT INTO stats (guide_id, timestamp, likes, visitors, favorites)
@@ -104,7 +104,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS stats (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             guide_id INTEGER,
-            timestamp TEXT,
+            timestamp INTEGER,
             likes INTEGER,
             visitors INTEGER,
             favorites INTEGER,
