@@ -8,6 +8,9 @@ import sqlite3
 ENABLE_LOGGING = True  # Active/désactive les logs détaillés
 DB_PATH = "/app/data.db"
 
+def steam_guide_url(guide_id):
+    return f"https://steamcommunity.com/sharedfiles/filedetails/?id={guide_id}"
+
 def log_request_info(start_time, end_time, content_length, url):
     if ENABLE_LOGGING:
         print(f"--- Log for : {url} ---")
@@ -55,7 +58,7 @@ def scrape_all():
             current_name = row["name"]
 
             try:
-                url = f"https://steamcommunity.com/sharedfiles/filedetails/?id={gid}"
+                url = steam_guide_url(gid)
                 html = fetch_html(session, url)
                 soup = BeautifulSoup(html, "html.parser")
 
@@ -90,6 +93,15 @@ def scrape_all():
                 print(f"[{gid}] Erreur lors du scraping : {e}")
 
     conn.close()
+
+def get_guide_name(guide_id):
+    url = steam_guide_url(guide_id)
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    soup = BeautifulSoup(r.text, 'html.parser')
+    title_el = soup.select_one(".workshopItemTitle")
+    return title_el.text.strip() if title_el else None
 
 def init_db():
     conn = get_connection()

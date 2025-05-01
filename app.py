@@ -6,6 +6,8 @@ import os
 import re
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.jinja_env.auto_reload = True
 
 def is_valid_guide_id(guide_id):
     return bool(re.match(r"^\d{1,32}$", guide_id))
@@ -41,6 +43,8 @@ def add_guide():
         cur.execute("INSERT OR IGNORE INTO guides (id, name) VALUES (?, ?)", (guide_id, name))
         conn.commit()
         conn.close()
+        return redirect(f"./{guide_id}")
+
     return redirect("./")
 
 @app.route("/data/<guide_id>")
@@ -64,11 +68,12 @@ def search():
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
-        SELECT id, name FROM guides 
-        WHERE name LIKE ? 
-        ORDER BY id DESC 
-        LIMIT 100
-    """, (f"%{query}%",))
+       SELECT id, name FROM guides 
+       WHERE name LIKE ? 
+       OR CAST(id AS TEXT) LIKE ?
+       ORDER BY id DESC 
+       LIMIT 100
+    """, (f"%{query}%", f"%{query}%",))
     results = [{"id": row["id"], "name": row["name"]} for row in cur.fetchall()]
     conn.close()
     return jsonify(results)
